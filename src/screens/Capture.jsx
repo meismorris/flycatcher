@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../lib/Icon.jsx';
 import { analyzeFrame } from '../lib/quality.js';
+import { getCamera, releaseCamera } from '../lib/camera.js';
 
 const HINTS = {
   aiming: { text: 'Fit the whole board within the marks', icon: 'image' },
@@ -30,11 +31,11 @@ export default function Capture({ onShot, onClose, canClose, onError }) {
   const streak = useRef({ s: 'aiming', n: 0 });
 
   useEffect(() => {
-    let stream, timer, alive = true;
+    let timer, alive = true;
     (async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false });
-        if (!alive) return stream.getTracks().forEach(t => t.stop());
+        const stream = await getCamera();
+        if (!alive) return;
         video.current.srcObject = stream;
         await video.current.play();
         setCam('live');
@@ -49,7 +50,7 @@ export default function Capture({ onShot, onClose, canClose, onError }) {
         }, 350);
       } catch { setCam('off'); }
     })();
-    return () => { alive = false; clearInterval(timer); stream && stream.getTracks().forEach(t => t.stop()); };
+    return () => { alive = false; clearInterval(timer); releaseCamera(); };
   }, []);
 
   const shoot = () => {
