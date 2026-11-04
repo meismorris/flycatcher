@@ -1,4 +1,4 @@
-# Flyer Catcher
+# FlyCatcher
 
 Snap a campus bulletin board, let AI split it into flyers, swipe through them, and keep the ones you like in a wallet that adds to your calendar.
 

@@ -1,5 +1,5 @@
 // Everything lives on the phone for now. No accounts.
-const KEY = 'flyer-catcher:v1';
+const KEY = 'flycatcher:v1';
 export function load() {
   try { return JSON.parse(localStorage.getItem(KEY)) || { events: [], resources: [], skipped: [] }; }
   catch { return { events: [], resources: [], skipped: [] }; }

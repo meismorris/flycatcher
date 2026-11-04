@@ -1,1 +1,1 @@
-{ "name": "Flyer Catcher", "short_name": "Flyers", "start_url": "/", "display": "standalone", "background_color": "#F0F1F2", "theme_color": "#F0F1F2", "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }] }
+{ "name": "FlyCatcher", "short_name": "Flyers", "start_url": "/", "display": "standalone", "background_color": "#F0F1F2", "theme_color": "#F0F1F2", "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }] }
