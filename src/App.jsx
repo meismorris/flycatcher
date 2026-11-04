@@ -9,6 +9,7 @@ import { load, save } from './lib/storage.js';
 import { resolveDate, fmt } from './lib/dates.js';
 import { kindFor, way } from './lib/kinds.js';
 import { cropFlyers } from './lib/crop.js';
+import { drawArt } from './lib/art.js';
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -28,7 +29,7 @@ function toDeck(result) {
     const start = r.start;
     const whenLine = !start ? 'Date not on flyer' : r.flags.includes('multi_day') && r.end ? `${fmt.day(start)} to ${r.end.getDate()}` : r.allDay ? `${fmt.day(start)}, time not on flyer` : `${fmt.day(start)}, ${fmt.time(start)}`;
     return {
-      id: uid(), flyer: f, kind, way: way(kind), image: f.image,
+      id: uid(), flyer: f, kind, way: way(kind), image: f.image, art: f.art,
       title: f.display_title || f.title_text || 'Untitled flyer', place: f.display_place || f.place_text, price: f.price_text,
       description: f.description, evidence: f.evidence,
       start, end: r.end, allDay: r.allDay, flags: r.flags, readings: readings && readings.length > 1 ? readings : null,
@@ -65,7 +66,7 @@ export default function App() {
       const r = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: dataUrl.split(',')[1] }) });
       res = await r.json();
       if (!r.ok) throw new Error(res.error || 'Scan failed');
-      res = { ...res, flyers: await cropFlyers(fullUrl, res.flyers || []) };
+      res = { ...res, flyers: await drawArt(await cropFlyers(fullUrl, res.flyers || [])) };
     } catch (e) {
       console.warn('Scan failed:', e.message);
       go('capture');
@@ -86,7 +87,7 @@ export default function App() {
     if (kind !== 'keep') return;
     let { start, end, allDay, flags } = ev;
     if (pick) { const r = resolveDate({ ...ev.flyer, date_text: pick }); start = r.start; end = r.end; allDay = r.allDay; flags = r.flags; }
-    const saved = { id: ev.id, title: ev.title, kind: ev.kind, place: ev.place, price: ev.price, description: ev.description, evidence: ev.evidence, image: ev.image, start: start && start.toISOString(), end: end && end.toISOString(), allDay, flags, added: false };
+    const saved = { id: ev.id, title: ev.title, kind: ev.kind, place: ev.place, price: ev.price, description: ev.description, evidence: ev.evidence, image: ev.image, art: ev.art, start: start && start.toISOString(), end: end && end.toISOString(), allDay, flags, added: false };
     setStore((s) => ({ ...s, events: [...s.events.filter((e) => e.id !== ev.id), saved] }));
     setFresh((f) => [...f, ev.id]);
   };

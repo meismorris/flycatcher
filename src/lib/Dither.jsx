@@ -31,8 +31,9 @@ function readTones(img, nx, ny, fit) {
     seen.push(tones[i]);
   }
   seen.sort((a, b) => a - b);
-  const lo = seen[Math.floor(seen.length * 0.02)], hi = seen[Math.floor(seen.length * 0.98)], range = Math.max(hi - lo, 0.01);
-  for (let i = 0; i < tones.length; i++) if (tones[i] >= 0) tones[i] = 1 - Math.max(0, Math.min(1, (tones[i] - lo) / range));
+  let lo = seen[Math.floor(seen.length * 0.02)], hi = seen[Math.floor(seen.length * 0.98)];
+  if (hi - lo < 0.05) { lo = 0; hi = 1; } // nearly one flat tone: nothing to stretch
+  for (let i = 0; i < tones.length; i++) if (tones[i] >= 0) tones[i] = 1 - Math.max(0, Math.min(1, (tones[i] - lo) / (hi - lo)));
   return tones;
 }
 

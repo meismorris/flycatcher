@@ -16,6 +16,13 @@ Accuracy rules:
 - evidence: the exact words you used for the date and time.
 - missing_fields only applies to kind "event" or "deadline".
 
+STEP 4 · For each "event" or "deadline", draw art_svg: one bold, simple illustration of what the event actually is, such as a saxophone for a jazz night or a bowl on a pottery wheel. Base it on the event itself. Never draw the flyer, a poster, or a sign, and do not copy the flyer's design. For other kinds, art_svg is null.
+Drawing rules:
+- A single <svg viewBox="0 0 100 100"> string under 900 characters, using only path, circle, ellipse, rect, polygon, and line.
+- A white background rect, then one large subject that fills most of the frame.
+- Fill with black, white, and two or three greys, using greys to show light and shadow.
+- No text, no people's faces, no scripts, no images, no links.
+
 kind is one of: "event", "deadline", "resource", "recruitment", "info", "other".
 category (only for events, else null) is one of: "art", "music", "market", "club", "film", "sport", "food", "talk", "party", "outdoors", "volunteer", "tech", "wellness", "culture", "study", "info_session".
 
@@ -37,6 +44,7 @@ Return ONLY JSON in this shape (values below are placeholders, not examples to c
     "category": "<category or null>",
     "description": "<one plain sentence about the event or null>",
     "evidence": "<exact words used for date and time>",
+    "art_svg": "<svg string or null>",
     "missing_fields": [],
     "unclear_fields": [],
     "possible_readings": [{ "field": "<field>", "options": ["<a>", "<b>"] }],
