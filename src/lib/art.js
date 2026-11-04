@@ -1,36 +1,29 @@
-// Turns the small SVG drawing Gemini makes for each event into something the dither can read.
-// It only ever loads through an <img>, where browsers don't run scripts or fetch anything.
-const SIZE = 400;
+// Draws the icon Gemini picked for each event, ready for the dither.
+import { ICONS } from './icons.js';
+import { kindFor } from './kinds.js';
 
-function artUrl(svg) {
-  const start = svg.indexOf('<svg'), end = svg.lastIndexOf('</svg>');
-  if (start < 0 || end < 0) return null;
-  const clean = svg.slice(start, end + 6);
-  const open = clean.slice(0, clean.indexOf('>'));
-  const sized = open.replace(/\s(width|height|xmlns)="[^"]*"/g, '').replace('<svg', `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}"`);
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sized + clean.slice(open.length))}`;
+const SIZE = 256;
+// Used when Gemini's pick isn't in the list.
+const BY_KIND = { art: 'palette', music: 'music', market: 'storefront', club: 'account-group', film: 'movie-open', sport: 'trophy', food: 'silverware-fork-knife', talk: 'account-voice', party: 'party-popper', outdoors: 'pine-tree', volunteer: 'hand-heart', tech: 'laptop' };
+
+function iconArt(name, category) {
+  const d = ICONS[name] || ICONS[BY_KIND[kindFor(category)]];
+  const c = document.createElement('canvas');
+  c.width = c.height = SIZE;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, SIZE, SIZE);
+  // The gradient gives the dither a range of tones, so icons aren't flat blocks of one color.
+  const shade = ctx.createLinearGradient(0, SIZE, SIZE, 0);
+  shade.addColorStop(0, '#000');
+  shade.addColorStop(1, '#7a7a7a');
+  ctx.fillStyle = shade;
+  ctx.scale(SIZE / 24, SIZE / 24);
+  ctx.fill(new Path2D(d));
+  return c.toDataURL('image/png');
 }
 
-// Null if the drawing is broken, or the browser won't let a canvas read it.
-const checked = (url) => new Promise((ok) => {
-  const img = new Image();
-  img.onload = () => {
-    try {
-      const c = document.createElement('canvas');
-      c.width = c.height = 1;
-      const ctx = c.getContext('2d');
-      ctx.drawImage(img, 0, 0, 1, 1);
-      ctx.getImageData(0, 0, 1, 1);
-      ok(url);
-    } catch { ok(null); }
-  };
-  img.onerror = () => ok(null);
-  img.src = url;
-});
-
-export async function drawArt(flyers) {
-  return Promise.all(flyers.map(async (f) => {
-    const url = typeof f.art_svg === 'string' ? artUrl(f.art_svg) : null;
-    return { ...f, art: url && await checked(url) };
-  }));
-}
+export const withArt = (flyers) => flyers.map((f) => ({
+  ...f,
+  art: f.kind === 'event' || f.kind === 'deadline' ? iconArt(f.art_icon, f.category) : null
+}));

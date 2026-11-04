@@ -55,7 +55,7 @@ export default function Dither({ src, w, h, colors, bg = '#F7F8FE', cell, fit = 
       ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
       for (let gy = 0; gy < ny; gy++) for (let gx = 0; gx < nx; gx++) {
         const tone = tones[gy * nx + gx];
-        if (tone < 0) continue;
+        if (tone < 0.03) continue; // outside the art or pure white: stays clean instead of shimmering into specks
         const f = tone + 0.08 * Math.sin((gx + gy) / (nx + ny) * 14 - t * 1.4); // slow shimmer across the flyer
         if (f <= 0.02) continue;
         const b = (BAYER[(gy % 4) * 4 + (gx % 4)] + 0.5) / 16;

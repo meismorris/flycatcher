@@ -94,7 +94,7 @@ export default function Capture({ onShot, onClose, canClose, onError }) {
         <span style={{ width: 36 }} />
       </header>
 
-      <div style={{ position: 'absolute', left: 20, right: 20, top: '17%', bottom: '31%', animation: h.ready ? 'settle 420ms var(--spring)' : 'none' }} key={h.ready ? 'r' : 'n'}>
+      <div style={{ position: 'absolute', left: 20, right: 20, top: '17%', bottom: 'calc(246px + env(safe-area-inset-bottom))', animation: h.ready ? 'settle 420ms var(--spring)' : 'none' }} key={h.ready ? 'r' : 'n'}>
         {corner({ left: 0, top: 0 }, '4px 0 0 4px', '20px 0 0 0')}
         {corner({ right: 0, top: 0 }, '4px 4px 0 0', '0 20px 0 0')}
         {corner({ left: 0, bottom: 0 }, '0 0 4px 4px', '0 0 0 20px')}

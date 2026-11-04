@@ -9,7 +9,7 @@ import { load, save } from './lib/storage.js';
 import { resolveDate, fmt } from './lib/dates.js';
 import { kindFor, way } from './lib/kinds.js';
 import { cropFlyers } from './lib/crop.js';
-import { drawArt } from './lib/art.js';
+import { withArt } from './lib/art.js';
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -66,7 +66,7 @@ export default function App() {
       const r = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: dataUrl.split(',')[1] }) });
       res = await r.json();
       if (!r.ok) throw new Error(res.error || 'Scan failed');
-      res = { ...res, flyers: await drawArt(await cropFlyers(fullUrl, res.flyers || [])) };
+      res = { ...res, flyers: withArt(await cropFlyers(fullUrl, res.flyers || [])) };
     } catch (e) {
       console.warn('Scan failed:', e.message);
       go('capture');
