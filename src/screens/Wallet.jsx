@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Icon from '../lib/Icon.jsx';
-import Dither from '../lib/Dither.jsx';
 import Poster from '../lib/Poster.jsx';
 import { fmt, relative } from '../lib/dates.js';
 import { way } from '../lib/kinds.js';
@@ -25,7 +24,7 @@ function Card({ ev, solid, onOpen, onAdd, idx, fresh }) {
         style={{ position: 'relative', overflow: 'hidden', padding: 14, borderRadius: 26, background: bg, color: solid ? '#fff' : 'var(--ink)', boxShadow: fresh ? '0 0 0 3px var(--blue)' : 'none', transition: 'box-shadow 1.2s var(--ease-out), transform 180ms var(--ease-out)' }}>
         <div style={{ display: 'flex', gap: 14, position: 'relative', zIndex: 1 }}>
           <span style={{ position: 'relative', width: 92, height: 92, borderRadius: 20, overflow: 'hidden', flex: 'none' }}>
-            <Poster ev={ev} w={92} h={92} colors={w.c} cell={3} fit="cover" />
+            <Poster ev={ev} w={92} h={92} colors={w.c} cell={2} fit="cover" />
             {badge && <span className="pop" style={{ position: 'absolute', left: 6, bottom: 6, height: 22, padding: '0 8px', borderRadius: 9999, background: 'rgba(255,255,255,.94)', display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: badge.c }}>{badge.dot && <span className="blink" style={{ width: 6, height: 6, borderRadius: 3, background: 'var(--live)' }} />}{badge.t}</span>}
           </span>
           <div style={{ flex: 1, minWidth: 0, paddingTop: 2 }}>
@@ -51,13 +50,13 @@ function Card({ ev, solid, onOpen, onAdd, idx, fresh }) {
 function Sheet({ ev, onClose, onRemove, onAdd }) {
   const [closing, setClosing] = useState(false);
   const close = (fn) => { setClosing(true); setTimeout(() => { fn && fn(); onClose(); }, 260); };
-  const w = way(ev.kind), start = ev.start ? new Date(ev.start) : null;
+  const start = ev.start ? new Date(ev.start) : null;
   return (
     <div style={{ position: 'absolute', inset: 0, zIndex: 50 }}>
       <div onClick={() => close()} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.35)', animation: `${closing ? 'vtOut' : 'rise'} 260ms var(--ease-out) both`, opacity: closing ? 0 : 1, transition: 'opacity 260ms' }} />
       <div className="safe-bottom" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '86%', overflow: 'auto', background: '#fff', borderRadius: '30px 30px 0 0', padding: '10px 20px 20px', transform: closing ? 'translateY(100%)' : 'none', transition: 'transform 260ms var(--ease-in-out)', animation: closing ? 'none' : 'dealIn 480ms var(--ease-out) both' }}>
         <span style={{ display: 'block', width: 38, height: 5, borderRadius: 3, background: '#DADADA', margin: '0 auto' }} />
-        <div style={{ position: 'relative', height: ev.image ? 320 : 180, marginTop: 14, borderRadius: 20, overflow: 'hidden' }}><Poster ev={ev} w={Math.min(440, window.innerWidth) - 40} h={ev.image ? 320 : 180} colors={w.c} cell={4} /></div>
+        {ev.image && <img src={ev.image} alt="The scanned flyer" style={{ display: 'block', width: '100%', height: 320, marginTop: 14, borderRadius: 20, objectFit: 'contain', background: 'var(--ground)' }} />}
         <div className="b" style={{ fontSize: 26, marginTop: 16 }}>{ev.title}</div>
         <div style={{ fontSize: 15, color: 'var(--sec)', marginTop: 6 }}>{start ? `${fmt.day(start)}${ev.allDay ? '' : ` at ${fmt.time(start)}`}` : 'Date not on flyer'}{ev.place ? `, ${ev.place}` : ''}{ev.price ? `, ${ev.price}` : ''}</div>
         {ev.description && <p style={{ fontSize: 15, lineHeight: 1.5, margin: '14px 0 0' }}>{ev.description}</p>}
@@ -108,8 +107,7 @@ export default function Wallet({ store, freshIds, onSnap, onUpdate, onRemove, to
           )) : <p style={{ color: 'var(--sec)', marginTop: 30, textAlign: 'center' }}>Flyers that aren't events, like free flu shots or club sign-ups, land here.</p>
         ) : list.length === 0 ? (
           <div className="rise" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginTop: 60 }}>
-            <span style={{ width: 200, height: 200, borderRadius: 40, overflow: 'hidden' }}><Dither kind="outdoors" w={200} h={200} colors={['#B9DAFE', '#1F84FC']} bg="#F0F1F2" cell={4} /></span>
-            <div className="b" style={{ fontSize: 24, marginTop: 26 }}>{tab === 'past' ? 'Nothing here yet' : 'No events yet'}</div>
+            <div className="b" style={{ fontSize: 24 }}>{tab === 'past' ? 'Nothing here yet' : 'No events yet'}</div>
             <div style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--sec)', marginTop: 8, maxWidth: 270 }}>{tab === 'past' ? 'Events you saved move here after they happen.' : 'Snap a bulletin board and swipe right on anything that looks fun. It\'ll show up here.'}</div>
             {tab === 'upcoming' && <button className="pill blue" style={{ marginTop: 26, padding: '0 24px', height: 52 }} onClick={onSnap}><Icon name="camera-fill" size={20} color="#fff" />Snap a board</button>}
           </div>

@@ -28,8 +28,8 @@ Built with React + Vite. Gemini reads the photo through a tiny server function (
 | `src/lib/prompt.js` | The board-reading prompt (AI copies text exactly; no guessing dates) |
 | `src/lib/dates.js` | App-side date logic: picks the year, parses times, flags weekday mismatches |
 | `src/lib/quality.js` | On-device checks for glare, darkness and blur that drive the live coach marks |
-| `src/lib/crop.js`, `Poster.jsx` | Cuts each flyer out of the photo using Gemini's box and shows it on the cards |
-| `src/lib/Dither.jsx`, `field.js` | Animated dither art, used when a flyer has no photo crop |
+| `src/lib/crop.js` | Cuts each flyer out of the photo using Gemini's box |
+| `src/lib/Dither.jsx`, `Poster.jsx` | Turns each scanned flyer into animated two-tone dither art for the cards |
 | `src/lib/ics.js` | "Add" downloads a calendar invite with a day-before alert |
 | `src/screens/*` | Capture, Reading, Retake, Swipe, Wallet |
 | `src/styles.css` | Tokens and the motion system |

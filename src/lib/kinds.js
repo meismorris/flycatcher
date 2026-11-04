@@ -1,4 +1,4 @@
-// Map the AI's category to one of the 12 animated dither scenes, and give each a sky-blue colorway.
+// Map the AI's category to one of 12 kinds, and give each a sky-blue colorway.
 export const KINDS = ['art', 'music', 'market', 'club', 'film', 'sport', 'food', 'talk', 'party', 'outdoors', 'volunteer', 'tech'];
 const ALIAS = { wellness: 'outdoors', culture: 'art', study: 'talk', info_session: 'talk', career: 'talk' };
 export const kindFor = (category) => KINDS.includes(category) ? category : (ALIAS[category] || 'club');
