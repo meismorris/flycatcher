@@ -11,16 +11,19 @@ const HINTS = {
 };
 
 // Downscale to keep uploads fast; Gemini reads 1600px boards fine.
-function toJpeg(src, sw, sh) {
-  const s = Math.min(1, 1600 / Math.max(sw, sh));
+function toJpeg(src, sw, sh, max = 1600) {
+  const s = Math.min(1, max / Math.max(sw, sh));
   const c = document.createElement('canvas');
   c.width = Math.round(sw * s); c.height = Math.round(sh * s);
   c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
   return c.toDataURL('image/jpeg', 0.82);
 }
 
-export default function Capture({ onShot, onClose, canClose }) {
-  const video = useRef(null), probe = useRef(null), fileRef = useRef(null);
+// The sharper copy stays on the phone; flyer photos are cropped from it.
+const CROP_SOURCE = 3000;
+
+export default function Capture({ onShot, onClose, canClose, onError }) {
+  const video = useRef(null), probe = useRef(null), cameraRef = useRef(null), libraryRef = useRef(null);
   const [cam, setCam] = useState('starting'); // starting | live | off
   const [hint, setHint] = useState('aiming');
   const [flash, setFlash] = useState(false);
@@ -51,17 +54,27 @@ export default function Capture({ onShot, onClose, canClose }) {
 
   const shoot = () => {
     const v = video.current;
-    if (cam !== 'live' || !v.videoWidth) return fileRef.current.click();
+    if (cam !== 'live' || !v.videoWidth) return cameraRef.current.click();
     setFlash(true);
     navigator.vibrate && navigator.vibrate(12);
     const data = toJpeg(v, v.videoWidth, v.videoHeight);
-    setTimeout(() => onShot(data, hint), 160);
+    const full = toJpeg(v, v.videoWidth, v.videoHeight, CROP_SOURCE);
+    setTimeout(() => onShot(data, full), 160);
   };
   const pick = (e) => {
-    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const f = e.target.files && e.target.files[0];
+    e.target.value = ''; // so choosing the same photo again still fires onChange
+    if (!f) return;
+    const url = URL.createObjectURL(f);
     const img = new Image();
-    img.onload = () => onShot(toJpeg(img, img.naturalWidth, img.naturalHeight), 'picked');
-    img.src = URL.createObjectURL(f);
+    img.onload = () => {
+      const data = toJpeg(img, img.naturalWidth, img.naturalHeight);
+      const full = toJpeg(img, img.naturalWidth, img.naturalHeight, CROP_SOURCE);
+      URL.revokeObjectURL(url);
+      onShot(data, full);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); onError('Couldn\'t open that photo. Try a different one.'); };
+    img.src = url;
   };
 
   const h = HINTS[hint];
@@ -86,7 +99,7 @@ export default function Capture({ onShot, onClose, canClose }) {
         {corner({ right: 0, top: 0 }, '4px 4px 0 0', '0 20px 0 0')}
         {corner({ left: 0, bottom: 0 }, '0 0 4px 4px', '0 0 0 20px')}
         {corner({ right: 0, bottom: 0 }, '0 4px 4px 0', '0 0 20px 0')}
-        {cam === 'off' && <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: 'rgba(255,255,255,.75)', textAlign: 'center', padding: 30, fontSize: 15, lineHeight: 1.5 }}>Camera isn't available here. Tap the shutter to take or choose a photo.</div>}
+        {cam === 'off' && <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: 'rgba(255,255,255,.75)', textAlign: 'center', padding: 30, fontSize: 15, lineHeight: 1.5 }}>Camera isn't available here. Tap the shutter to take a photo, or the image button to choose one.</div>}
       </div>
 
       <div style={{ position: 'absolute', left: 18, right: 18, bottom: 'calc(150px + env(safe-area-inset-bottom))', minHeight: 76, padding: '14px 18px 14px 14px', borderRadius: 22, background: 'rgba(28,28,28,.62)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', gap: 18, color: '#fff' }}>
@@ -103,8 +116,9 @@ export default function Capture({ onShot, onClose, canClose }) {
         <button aria-label="Take photo" onClick={shoot} className="press" style={{ width: 78, height: 78, borderRadius: 39, boxShadow: 'inset 0 0 0 4px #fff', display: 'grid', placeItems: 'center' }}>
           <span style={{ width: 62, height: 62, borderRadius: 31, background: '#fff' }} />
         </button>
-        <button aria-label="Choose a photo" className="press" onClick={() => fileRef.current.click()} style={{ width: 44, height: 44, borderRadius: 12, display: 'grid', placeItems: 'center', boxShadow: '0 0 0 2px #fff' }}><Icon name="image" size={24} color="#fff" /></button>
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={pick} hidden />
+        <button aria-label="Choose a photo" className="press" onClick={() => libraryRef.current.click()} style={{ width: 44, height: 44, borderRadius: 12, display: 'grid', placeItems: 'center', boxShadow: '0 0 0 2px #fff' }}><Icon name="image" size={24} color="#fff" /></button>
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={pick} hidden />
+        <input ref={libraryRef} type="file" accept="image/*" onChange={pick} hidden />
       </div>
       {flash && <div onAnimationEnd={() => setFlash(false)} style={{ position: 'absolute', inset: 0, background: '#fff', animation: 'flash 260ms var(--ease-out) both', pointerEvents: 'none' }} />}
     </div>

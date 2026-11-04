@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Icon from '../lib/Icon.jsx';
-import Dither from '../lib/Dither.jsx';
+import Poster from '../lib/Poster.jsx';
 
 export default function Swipe({ deck, onDecide, onDone, onClose }) {
   const vw = Math.min(typeof window !== 'undefined' ? window.innerWidth : 390, 480);
@@ -86,7 +86,7 @@ export default function Swipe({ deck, onDecide, onDone, onClose }) {
             <div style={{ position: 'absolute', inset: 0, animation: `dealIn 620ms var(--spring) ${Math.min(j, 3) * 80}ms both` }}>
               <div style={{ position: 'absolute', inset: 0, borderRadius: 24, overflow: 'hidden', background: ev.way.panel, boxShadow: '0 18px 40px rgba(0,0,0,.12), 0 2px 6px rgba(0,0,0,.06)' }}>
                 <div style={{ position: 'relative', width: CW, height: AH, overflow: 'hidden' }}>
-                  <Dither kind={ev.kind} w={CW} h={AH} colors={ev.way.c} cell={4} />
+                  <Poster ev={ev} w={CW} h={AH} colors={ev.way.c} cell={4} />
                   <div style={{ position: 'absolute', left: 12, top: 12, width: 50, height: 54, borderRadius: 14, background: 'rgba(245,245,245,.94)', display: 'grid', placeItems: 'center', alignContent: 'center' }}>
                     <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: .6, color: ev.way.c[1] }}>{ev.mon || '—'}</span>
                     <span className="b" style={{ fontSize: 24, lineHeight: 1 }}>{ev.dd || '?'}</span>

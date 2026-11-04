@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Icon from '../lib/Icon.jsx';
 import Dither from '../lib/Dither.jsx';
+import Poster from '../lib/Poster.jsx';
 import { fmt, relative } from '../lib/dates.js';
 import { way } from '../lib/kinds.js';
 import { downloadIcs } from '../lib/ics.js';
@@ -24,7 +25,7 @@ function Card({ ev, solid, onOpen, onAdd, idx, fresh }) {
         style={{ position: 'relative', overflow: 'hidden', padding: 14, borderRadius: 26, background: bg, color: solid ? '#fff' : 'var(--ink)', boxShadow: fresh ? '0 0 0 3px var(--blue)' : 'none', transition: 'box-shadow 1.2s var(--ease-out), transform 180ms var(--ease-out)' }}>
         <div style={{ display: 'flex', gap: 14, position: 'relative', zIndex: 1 }}>
           <span style={{ position: 'relative', width: 92, height: 92, borderRadius: 20, overflow: 'hidden', flex: 'none' }}>
-            <Dither kind={ev.kind} w={92} h={92} colors={w.c} cell={3} />
+            <Poster ev={ev} w={92} h={92} colors={w.c} cell={3} fit="cover" />
             {badge && <span className="pop" style={{ position: 'absolute', left: 6, bottom: 6, height: 22, padding: '0 8px', borderRadius: 9999, background: 'rgba(255,255,255,.94)', display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: badge.c }}>{badge.dot && <span className="blink" style={{ width: 6, height: 6, borderRadius: 3, background: 'var(--live)' }} />}{badge.t}</span>}
           </span>
           <div style={{ flex: 1, minWidth: 0, paddingTop: 2 }}>
@@ -56,7 +57,7 @@ function Sheet({ ev, onClose, onRemove, onAdd }) {
       <div onClick={() => close()} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.35)', animation: `${closing ? 'vtOut' : 'rise'} 260ms var(--ease-out) both`, opacity: closing ? 0 : 1, transition: 'opacity 260ms' }} />
       <div className="safe-bottom" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '86%', overflow: 'auto', background: '#fff', borderRadius: '30px 30px 0 0', padding: '10px 20px 20px', transform: closing ? 'translateY(100%)' : 'none', transition: 'transform 260ms var(--ease-in-out)', animation: closing ? 'none' : 'dealIn 480ms var(--ease-out) both' }}>
         <span style={{ display: 'block', width: 38, height: 5, borderRadius: 3, background: '#DADADA', margin: '0 auto' }} />
-        <div style={{ position: 'relative', height: 180, marginTop: 14, borderRadius: 20, overflow: 'hidden' }}><Dither kind={ev.kind} w={Math.min(440, window.innerWidth) - 40} h={180} colors={w.c} cell={4} /></div>
+        <div style={{ position: 'relative', height: ev.image ? 320 : 180, marginTop: 14, borderRadius: 20, overflow: 'hidden' }}><Poster ev={ev} w={Math.min(440, window.innerWidth) - 40} h={ev.image ? 320 : 180} colors={w.c} cell={4} /></div>
         <div className="b" style={{ fontSize: 26, marginTop: 16 }}>{ev.title}</div>
         <div style={{ fontSize: 15, color: 'var(--sec)', marginTop: 6 }}>{start ? `${fmt.day(start)}${ev.allDay ? '' : ` at ${fmt.time(start)}`}` : 'Date not on flyer'}{ev.place ? `, ${ev.place}` : ''}{ev.price ? `, ${ev.price}` : ''}</div>
         {ev.description && <p style={{ fontSize: 15, lineHeight: 1.5, margin: '14px 0 0' }}>{ev.description}</p>}

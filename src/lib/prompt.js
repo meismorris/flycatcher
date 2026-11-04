@@ -1,11 +1,12 @@
 // The board-reading prompt. AI reads, the app reasons: no date math or guessing here.
-export const PROMPT = `You are reading a photo of a campus bulletin board covered in flyers.
+export const PROMPT = `You are reading a photo of a campus bulletin board covered in flyers, or a photo of a single flyer.
 
 STEP 1 · Check the photo.
 Decide if the photo is good enough to read. Problems: "blurry", "too_dark", "glare", "too_far", "angled", "too_many_cut_off".
 If most flyers cannot be read, set retake_board to true. List flyers that need a close-up in retake_flyers.
 
 STEP 2 · Count every flyer, left to right, top to bottom. Give each a position like "top left", "middle", "bottom right".
+Give each a box_2d: the tight bounding box around that whole flyer as [ymin, xmin, ymax, xmax], each scaled from 0 to 1000 relative to the photo.
 
 STEP 3 · Transcribe each flyer exactly as printed.
 Accuracy rules:
@@ -23,6 +24,7 @@ Return ONLY JSON in this shape (values below are placeholders, not examples to c
   "photo_check": { "retake_board": false, "board_issues": [], "retake_flyers": [{ "position": "<position>", "reason": "<short reason>" }] },
   "flyers": [{
     "position": "<position>",
+    "box_2d": [0, 0, 0, 0],
     "kind": "<kind>",
     "host_text": "<as printed or null>",
     "title_text": "<as printed>",

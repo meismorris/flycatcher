@@ -11,8 +11,6 @@ Built with React + Vite. Gemini reads the photo through a tiny server function (
 3. `npm install`
 4. `npm run dev`, then open the "Network" URL it prints on your phone (same Wi-Fi)
 
-No key? The app still runs in **demo mode** with a sample board, so you can try the whole flow.
-
 > Phones only allow the live camera on `https://` or `localhost`. On the local network URL, the shutter falls back to the phone's camera picker. Deploy (below) to get the live camera with coach marks.
 
 ## Deploy to your phone (free)
@@ -30,7 +28,8 @@ No key? The app still runs in **demo mode** with a sample board, so you can try 
 | `src/lib/prompt.js` | The board-reading prompt (AI copies text exactly; no guessing dates) |
 | `src/lib/dates.js` | App-side date logic: picks the year, parses times, flags weekday mismatches |
 | `src/lib/quality.js` | On-device checks for glare, darkness and blur that drive the live coach marks |
-| `src/lib/Dither.jsx`, `field.js` | Animated dither art for each event category |
+| `src/lib/crop.js`, `Poster.jsx` | Cuts each flyer out of the photo using Gemini's box and shows it on the cards |
+| `src/lib/Dither.jsx`, `field.js` | Animated dither art, used when a flyer has no photo crop |
 | `src/lib/ics.js` | "Add" downloads a calendar invite with a day-before alert |
 | `src/screens/*` | Capture, Reading, Retake, Swipe, Wallet |
 | `src/styles.css` | Tokens and the motion system |

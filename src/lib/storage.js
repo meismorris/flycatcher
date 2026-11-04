@@ -5,5 +5,14 @@ export function load() {
   catch { return { events: [], resources: [], skipped: [] }; }
 }
 export function save(state) {
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode: keep in memory */ }
+  const events = [...state.events];
+  for (;;) {
+    try { return void localStorage.setItem(KEY, JSON.stringify({ ...state, events })); }
+    catch {
+      // Out of room: drop the oldest flyer photo and retry. Private mode runs out of photos and keeps in memory.
+      const i = events.findIndex((e) => e.image);
+      if (i < 0) return;
+      events[i] = { ...events[i], image: null };
+    }
+  }
 }
