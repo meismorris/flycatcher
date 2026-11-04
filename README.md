@@ -7,7 +7,7 @@ Built with React + Vite. Gemini reads the photo through a tiny server function (
 ## Run it locally
 
 1. Get a free Gemini API key at https://aistudio.google.com/apikey
-2. `cp .env.example .env` and paste the key into `GEMINI_API_KEY`
+2. Create a `.env` file containing `GEMINI_API_KEY=your-key` (it's gitignored, so the key stays on your machine). Optionally add `GEMINI_MODEL=` to pick a different model.
 3. `npm install`
 4. `npm run dev`, then open the "Network" URL it prints on your phone (same Wi-Fi)
 
